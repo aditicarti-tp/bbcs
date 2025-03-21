@@ -4,7 +4,7 @@ import plotly.express as px
 
 def show(): 
     # Load dataset
-    file_path = "cleaned_bird_datafinall.csv"
+    file_path = "final_biodiversity_dataset.csv"
     df = pd.read_csv(file_path)
 
     # Streamlit UI
@@ -28,6 +28,26 @@ def show():
     # Display full dataset
     st.subheader("📄 Complete Dataset")
     st.dataframe(filtered_df)
+
+    # Load the final dataset
+    biodiversity_df = pd.read_csv("final_biodiversity_dataset.csv")
+
+    # Group by species and count occurrences
+    species_counts = biodiversity_df["Species"].value_counts().reset_index()
+    species_counts.columns = ["Species", "Count"]
+
+    # Create a pie chart
+    st.subheader("🌍 Distribution of Species Globally")
+    fig_pie = px.pie(
+        species_counts, 
+        names="Species", 
+        values="Count", 
+        title="Proportion of Different Species",
+        hole=0.3,  # Creates a donut-style chart
+        color_discrete_sequence=px.colors.qualitative.Set2  # Aesthetic color set
+    )
+
+    st.plotly_chart(fig_pie)
 
     # Top 10 Countries with Most Endangered Species (Including "CRIT")
     st.subheader("🌍 Top 10 Countries with Most Endangered Species")
@@ -84,4 +104,7 @@ def show():
 
     st.write("🔍 **Insight:** This breakdown allows us to compare different levels of species risk across various countries.")
 
-    st.write("📌 **Data Source:** Biodiversity Dataset")
+    st.write("📌 **Data Sources:**")
+    st.write("🔗 [Biodiversity Dataset](https://www.kaggle.com/datasets/sarthakvajpayee/global-species-extinction)")
+    st.write("🔗 [Deforestation Dataset](https://www.kaggle.com/datasets/konradb/deforestation-dataset/data)")
+

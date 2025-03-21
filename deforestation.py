@@ -70,4 +70,7 @@ def show():
     st.plotly_chart(fig_map)
     st.write("🔍 **Insight:** Darker red regions show where deforestation is most severe.")
 
-    st.write("📌 **Data Source:** Deforestation Dataset")
+    st.write("📌 **Data Sources:**")
+    st.write("🔗 [Biodiversity Dataset](https://www.kaggle.com/datasets/sarthakvajpayee/global-species-extinction)")
+    st.write("🔗 [Deforestation Dataset](https://www.kaggle.com/datasets/konradb/deforestation-dataset/data)")
+
