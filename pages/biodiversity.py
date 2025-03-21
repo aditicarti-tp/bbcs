@@ -4,7 +4,7 @@ import plotly.express as px
 
 def show(): 
     # Load dataset
-    file_path = "cleaned_biodiversity_dataset.csv"
+    file_path = "cleaned_bird_datafinall.csv"
     df = pd.read_csv(file_path)
 
     # Streamlit UI
@@ -29,16 +29,16 @@ def show():
     st.subheader("📄 Complete Dataset")
     st.dataframe(filtered_df)
 
-    # Top 10 Countries with Most Endangered Species
+    # Top 10 Countries with Most Endangered Species (Including "CRIT")
     st.subheader("🌍 Top 10 Countries with Most Endangered Species")
-    endangered_df = df[df["International Union for Conservation of Nature Category"] == "ENDANGERED"]
-    top_countries = endangered_df.groupby("Country")["Value"].sum().nlargest(10).reset_index()
+    endangered_df = df[df["Status"].isin(["THREAT", "VULN", "CRIT"])]  # Filter for threatened, vulnerable, and critical species
+    top_countries = endangered_df.groupby("Country")["Animals"].sum().nlargest(10).reset_index()
 
     fig_top_countries = px.bar(
-        top_countries, x="Value", y="Country",
+        top_countries, x="Animals", y="Country",
         title="Top 10 Countries with Most Endangered Species",
-        labels={"Value": "Number of Endangered Species"},
-        color="Value",
+        labels={"Animals": "Number of Endangered Species"},
+        color="Animals",
         orientation="h",
         color_continuous_scale="reds"
     )
@@ -46,32 +46,37 @@ def show():
     st.write("🔍 **Insight:** These countries have the highest number of endangered species. They may need urgent conservation efforts.")
 
     # Species Distribution Over Countries (Bubble Chart)
-    st.subheader("Endangered, Vulnerable, and Critical Species Distribution")
+    st.subheader("Endangered, Vulnerable, Critical, and Known Species Distribution")
     fig_bubble = px.scatter(
-        df[df["International Union for Conservation of Nature Category"].isin(["ENDANGERED", "VULNERABLE", "CRITICAL"])],
-        x="Country", y="Value", size="Value",
-        color="International Union for Conservation of Nature Category",
+        df[df["Status"].isin(["THREAT", "VULN", "CRIT"])],  # Include "CRIT" for Critical species
+        x="Country", y="Animals", size="Animals",
+        color="Status",
         title="Distribution of At-Risk Species by Country",
-        labels={"Value": "Number of Species"},
-        color_discrete_map={"ENDANGERED": "red", "VULNERABLE": "orange", "CRITICAL": "blue"}
+        labels={"Animals": "Number of Species"},
+        color_discrete_map={
+            "THREAT": "red", 
+            "VULN": "orange", 
+            "CRIT": "blue",  # Added color for Critical status
+            "KNOW": "green"
+        }
     )
     st.plotly_chart(fig_bubble)
     st.write("🔍 **Insight:** Larger bubbles indicate a greater number of species at risk in that country.")
 
-    # Comparison of Endangered, Vulnerable, and Critical Species by Country
+    # Comparison of Endangered, Vulnerable, Critical, and Known Species by Country
     st.subheader("Conservation Status Comparison")
 
     # Define categories and colors
-    conservation_categories = ["ENDANGERED", "VULNERABLE", "CRITICAL"]
-    colors = {"ENDANGERED": "#d62728", "VULNERABLE": "#ff7f0e", "CRITICAL": "#1f77b4"}
+    conservation_categories = ["THREAT", "VULN", "CRIT", "KNOW"]
+    colors = {"THREAT": "#d62728", "VULN": "#ff7f0e", "CRIT": "#1f77b4", "KNOW": "#2ca02c"}
 
     for category in conservation_categories:
-        category_df = df[df["International Union for Conservation of Nature Category"] == category]
+        category_df = df[df["Status"] == category]
         if not category_df.empty:
             st.subheader(f"{category} Species by Country")
             fig = px.bar(
-                category_df, x="Country", y="Value", 
-                labels={"Value": "Number of Species"},
+                category_df, x="Country", y="Animals", 
+                labels={"Animals": "Number of Species"},
                 title=f"{category} Species Distribution",
                 color_discrete_sequence=[colors[category]]
             )
