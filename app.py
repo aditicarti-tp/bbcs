@@ -1,7 +1,7 @@
 import streamlit as st
-import pages.biodiversity as biodiversity
-import pages.deforestation as deforestation
-import pages.comparison as comparison
+import biodiversity as biodiversity
+import deforestation as deforestation
+import comparison as comparison
 
 # Navigation
 st.sidebar.title("Navigation")
